@@ -4,8 +4,8 @@
     "query": "Chào bạn, một chế độ ăn cân bằng dinh dưỡng cần đảm bảo những nhóm chất nào?",
     "action_type": "FINAL_ANSWER",
     "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
-    "output": "Một chế độ ăn cân bằng và lành mạnh cần đảm bảo cung cấp đầy đủ **4 nhóm chất dinh dưỡng thiết yếu** sau đây cho cơ thể:\n\n1. **Nhóm chất bột đường (Carbohydrates):**\n   * **Vai trò:** Là nguồn cung cấp năng lượng chính cho mọi hoạt động của cơ thể và não bộ.\n   * **Nguồn thực phẩm:** Gạo, bánh mì, khoai tây, khoai lang, ngũ cốc, yến mạch,... Nên ưu tiên các loại carbohydrate phức hợp (nhiều chất xơ) như gạo lứt, ngũ cốc nguyên hạt.\n\n2. **Nhóm chất đạm (Protein):**\n   * **Vai trò:** Là nguyên liệu xây dựng và tái tạo các tế bào, cơ bắp, hỗ trợ hệ miễn dịch và sản sinh hormone.\n   * **Nguồn thực phẩm:** Thịt (heo, bò, gà), cá, trứng, sữa, hải sản và các loại đậu (đậu nành, đậu xanh, đậu đen,...).\n\n3. **Nhóm chất béo (Lipids/Fats):**\n   * **Vai trò:** Cung cấp năng lượng dự trữ, giúp hấp thụ các vitamin tan trong dầu (A, D, E, K) và bảo vệ các cơ quan nội tạng.\n   * **Nguồn thực phẩm:** Dầu thực vật (dầu ô liu, dầu hướng dương), mỡ cá, các loại hạt (hạnh nhân, óc chó), quả bơ,... Nên hạn chế chất béo bão hòa (mỡ động vật) và tránh chất béo chuyển hóa (đồ chiên rán sẵn).\n\n4. **Nhóm Vitamin và Khoáng chất (Micronutrients):**\n   * **Vai trò:** Mặc dù cơ thể chỉ cần một lượng nhỏ, nhưng chúng đóng vai trò cực kỳ quan trọng trong việc duy trì các chức năng sinh lý, tăng cường đề kháng và chống oxy hóa.\n   * **Nguồn thực phẩm:** Các loại rau xanh, củ quả, trái cây tươi (cung cấp Vitamin A, C, E, Kali, Sắt, Canxi,...).\n\nBên cạnh 4 nhóm chất trên, bạn cũng cần chú ý bổ sung đủ **Nước** (khoảng 1.5 - 2 lít mỗi ngày) và **Chất xơ** (từ rau củ quả) để hỗ trợ hệ tiêu hóa hoạt động tốt nhất.",
-    "latency_ms": 4695.35
+    "output": "Một chế độ ăn cân bằng và lành mạnh cần đảm bảo cung cấp đầy đủ **4 nhóm chất dinh dưỡng thiết yếu** sau đây cho cơ thể:\n\n1. **Nhóm chất bột đường (Carbohydrates):**\n   * **Vai trò:** Là nguồn cung cấp năng lượng chính và nhanh chóng cho mọi hoạt động của cơ thể, đặc biệt là não bộ và cơ bắp.\n   * **Nguồn thực phẩm:** Gạo, bánh mì, bún, phở, khoai lang, khoai tây, ngô, ngũ cốc nguyên hạt...\n\n2. **Nhóm chất đạm (Protein):**\n   * **Vai trò:** Là nguyên liệu xây dựng và tái tạo các tế bào, cơ bắp, da, tóc, đồng thời tham gia vào quá trình sản xuất enzyme, hormone và tăng cường hệ miễn dịch.\n   * **Nguồn thực phẩm:** Thịt (heo, bò, gà), cá, hải sản, trứng, sữa và các chế phẩm từ sữa, các loại đậu (đậu nành, đậu xanh, đậu đen...).\n\n3. **Nhóm chất béo (Lipids/Fats):**\n   * **Vai trò:** Cung cấp nguồn năng lượng dự trữ dồi dào, giúp hấp thụ các vitamin tan trong chất béo (như Vitamin A, D, E, K), bảo vệ các cơ quan nội tạng và hỗ trợ hoạt động của não bộ. Nên ưu tiên chất béo không bão hòa (chất béo tốt).\n   * **Nguồn thực phẩm:** Dầu thực vật (dầu ô liu, dầu đậu nành), mỡ cá, bơ, các loại hạt (hạt điều, hạnh nhân, óc chó...).\n\n4. **Nhóm Vitamin và Khoáng chất (Micronutrients):**\n   * **Vai trò:** Mặc dù cơ thể chỉ cần một lượng nhỏ, nhưng chúng đóng vai trò cực kỳ quan trọng trong việc điều hòa các quá trình sinh hóa, tăng sức đề kháng và bảo vệ cơ thể khỏi bệnh tật.\n   * **Nguồn thực phẩm:** Các loại rau xanh, củ quả, trái cây tươi, các loại hạt...\n\n**Hai yếu tố quan trọng khác không thể thiếu:**\n* **Chất xơ:** Giúp hệ tiêu hóa hoạt động khỏe mạnh, ngăn ngừa táo bón và hỗ trợ kiểm soát đường huyết, cholesterol.\n* **Nước:** Chiếm khoảng 60-70% trọng lượng cơ thể, cần thiết cho mọi quá trình trao đổi chất, vận chuyển dinh dưỡng và đào thải độc tố. Bạn nên uống đủ từ 1.5 - 2 lít nước mỗi ngày.",
+    "latency_ms": 6367.48
   },
   {
     "step": 1,
@@ -27,30 +27,52 @@
         "meal_type": "Sáng/Trưa"
       }
     },
-    "latency_ms": 602.68
+    "latency_ms": 1729.2
   },
   {
     "step": 2,
     "query": "Hãy tra cứu thông tin dinh dưỡng và giá của món Phở bò tái.",
     "action_type": "FINAL_ANSWER",
-    "thought": "Đã có Observation từ Tool trước đó; trả lời trực tiếp mà không gọi thêm Tool (giới hạn của chế độ Mock).",
-    "output": "[Mock Agent Response]: Đã nhận dữ liệu từ Tool ở bước trước. (Chế độ Mock Offline không tổng hợp suy luận đa bước chi tiết như LLM thật, vui lòng cấu hình API Key thật để kiểm thử đầy đủ.)",
-    "latency_ms": 613.71
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Dựa trên kết quả tra cứu, dưới đây là thông tin dinh dưỡng và giá của món **Phở bò tái**:\n\n*   **Giá tiền:** 45.000 VNĐ\n*   **Hàm lượng dinh dưỡng:**\n    *   **Calories:** 480 kcal\n    *   **Protein (Chất đạm):** 25g\n    *   **Carbs (Tinh bột):** 55g\n    *   **Fat (Chất béo):** 12g\n*   **Bữa ăn phù hợp:** Sáng hoặc Trưa.",
+    "latency_ms": 3647.01
   },
   {
     "step": 1,
     "query": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "add_meal_to_plan",
+    "tool_name": "food_lookup",
     "arguments": {
-      "day": "Thứ Hai",
-      "meal_slot": "Trưa",
       "food_name": "Salad ức gà"
     },
     "observation": {
       "status": "SUCCESS",
+      "food_name": "Salad ức gà",
+      "data": {
+        "calories": 380,
+        "protein_g": 32,
+        "carbs_g": 18,
+        "fat_g": 16,
+        "price_vnd": 50000,
+        "meal_type": "Trưa/Tối"
+      }
+    },
+    "latency_ms": 2460.67
+  },
+  {
+    "step": 2,
+    "query": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "add_meal_to_plan",
+    "arguments": {
+      "food_name": "Salad ức gà",
+      "day": "Thứ Ba",
+      "meal_slot": "Trưa"
+    },
+    "observation": {
+      "status": "SUCCESS",
       "booking": {
-        "day": "Thứ Hai",
+        "day": "Thứ Ba",
         "meal_slot": "Trưa",
         "food_name": "Salad ức gà",
         "calories": 380,
@@ -62,33 +84,55 @@
         "total_calories_today": 380,
         "daily_calorie_target": 2000
       },
-      "message": "Đã thêm 'Salad ức gà' vào bữa Trưa ngày Thứ Hai."
+      "message": "Đã thêm 'Salad ức gà' vào bữa Trưa ngày Thứ Ba."
     },
-    "latency_ms": 715.89
+    "latency_ms": 1625.6
   },
   {
-    "step": 2,
+    "step": 3,
     "query": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
     "action_type": "FINAL_ANSWER",
-    "thought": "Đã có Observation từ Tool trước đó; trả lời trực tiếp mà không gọi thêm Tool (giới hạn của chế độ Mock).",
-    "output": "[Mock Agent Response]: Đã nhận dữ liệu từ Tool ở bước trước. (Chế độ Mock Offline không tổng hợp suy luận đa bước chi tiết như LLM thật, vui lòng cấu hình API Key thật để kiểm thử đầy đủ.)",
-    "latency_ms": 712.75
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Tôi đã thêm thành công món **Salad ức gà** vào bữa **Trưa** ngày **Thứ Ba** cho bạn. \n\nDưới đây là thông tin chi tiết và cập nhật kế hoạch của bạn:\n*   **Thông tin món ăn:**\n    *   **Lượng calo:** 380 kcal (Protein: 32g, Carbs: 18g, Fat: 16g)\n    *   **Giá tiền:** 50.000đ\n*   **Cập nhật kế hoạch:**\n    *   **Tổng calo đã tích lũy cho Thứ Ba:** 380 / 2.000 kcal (mục tiêu ngày)\n    *   **Tổng chi tiêu trong tuần:** 50.000đ\n    *   **Ngân sách còn lại:** 650.000đ / 700.000đ\n\nBạn có muốn tiếp tục lên kế hoạch cho các bữa ăn khác không?",
+    "latency_ms": 4918.55
   },
   {
     "step": 1,
     "query": "Tôi muốn ăn tối nay trong ngân sách còn lại của tuần, hãy tra cứu món Cơm tấm sườn rồi thêm vào kế hoạch bữa tối Thứ Tư giúp tôi.",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "add_meal_to_plan",
+    "tool_name": "food_lookup",
     "arguments": {
-      "day": "Thứ Hai",
-      "meal_slot": "Trưa",
       "food_name": "Cơm tấm sườn"
     },
     "observation": {
       "status": "SUCCESS",
+      "food_name": "Cơm tấm sườn",
+      "data": {
+        "calories": 700,
+        "protein_g": 28,
+        "carbs_g": 75,
+        "fat_g": 28,
+        "price_vnd": 38000,
+        "meal_type": "Trưa/Tối"
+      }
+    },
+    "latency_ms": 1527.3
+  },
+  {
+    "step": 2,
+    "query": "Tôi muốn ăn tối nay trong ngân sách còn lại của tuần, hãy tra cứu món Cơm tấm sườn rồi thêm vào kế hoạch bữa tối Thứ Tư giúp tôi.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "add_meal_to_plan",
+    "arguments": {
+      "food_name": "Cơm tấm sườn",
+      "day": "Thứ Tư",
+      "meal_slot": "Tối"
+    },
+    "observation": {
+      "status": "SUCCESS",
       "booking": {
-        "day": "Thứ Hai",
-        "meal_slot": "Trưa",
+        "day": "Thứ Tư",
+        "meal_slot": "Tối",
         "food_name": "Cơm tấm sườn",
         "calories": 700,
         "price_vnd": 38000
@@ -96,20 +140,20 @@
       "week_summary": {
         "total_spent_vnd": 88000,
         "remaining_budget_vnd": 612000,
-        "total_calories_today": 1080,
+        "total_calories_today": 700,
         "daily_calorie_target": 2000
       },
-      "message": "Đã thêm 'Cơm tấm sườn' vào bữa Trưa ngày Thứ Hai."
+      "message": "Đã thêm 'Cơm tấm sườn' vào bữa Tối ngày Thứ Tư."
     },
-    "latency_ms": 533.6
+    "latency_ms": 2964.12
   },
   {
-    "step": 2,
+    "step": 3,
     "query": "Tôi muốn ăn tối nay trong ngân sách còn lại của tuần, hãy tra cứu món Cơm tấm sườn rồi thêm vào kế hoạch bữa tối Thứ Tư giúp tôi.",
     "action_type": "FINAL_ANSWER",
-    "thought": "Đã có Observation từ Tool trước đó; trả lời trực tiếp mà không gọi thêm Tool (giới hạn của chế độ Mock).",
-    "output": "[Mock Agent Response]: Đã nhận dữ liệu từ Tool ở bước trước. (Chế độ Mock Offline không tổng hợp suy luận đa bước chi tiết như LLM thật, vui lòng cấu hình API Key thật để kiểm thử đầy đủ.)",
-    "latency_ms": 602.02
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Tôi đã tra cứu thông tin dinh dưỡng và thêm món **Cơm tấm sườn** vào kế hoạch ăn uống của bạn thành công. Dưới đây là chi tiết:\n\n*   **Thông tin món ăn (Cơm tấm sườn):**\n    *   **Năng lượng:** 700 calories (Protein: 28g, Carbs: 75g, Fat: 28g)\n    *   **Giá tiền:** 38.000đ\n*   **Cập nhật kế hoạch:**\n    *   Đã thêm vào bữa **Tối** ngày **Thứ Tư**.\n    *   **Tổng lượng calories hôm nay (Thứ Tư):** 700 / 2.000 calories mục tiêu.\n    *   **Ngân sách tuần còn lại:** 612.000đ (Đã chi tiêu: 88.000đ).",
+    "latency_ms": 2431.52
   },
   {
     "step": 1,
@@ -117,28 +161,20 @@
     "action_type": "TOOL_EXECUTION",
     "tool_name": "food_lookup",
     "arguments": {
-      "food_name": "Phở bò tái"
+      "food_name": "Sushi cá ngừ đại dương"
     },
     "observation": {
-      "status": "SUCCESS",
-      "food_name": "Phở bò tái",
-      "data": {
-        "calories": 480,
-        "protein_g": 25,
-        "carbs_g": 55,
-        "fat_g": 12,
-        "price_vnd": 45000,
-        "meal_type": "Sáng/Trưa"
-      }
+      "status": "NOT_FOUND",
+      "message": "Không tìm thấy dữ liệu dinh dưỡng cho món 'Sushi cá ngừ đại dương'"
     },
-    "latency_ms": 599.66
+    "latency_ms": 1931.07
   },
   {
     "step": 2,
     "query": "Tra cứu thông tin dinh dưỡng của món 'Sushi cá ngừ đại dương' giúp tôi.",
     "action_type": "FINAL_ANSWER",
-    "thought": "Đã có Observation từ Tool trước đó; trả lời trực tiếp mà không gọi thêm Tool (giới hạn của chế độ Mock).",
-    "output": "[Mock Agent Response]: Đã nhận dữ liệu từ Tool ở bước trước. (Chế độ Mock Offline không tổng hợp suy luận đa bước chi tiết như LLM thật, vui lòng cấu hình API Key thật để kiểm thử đầy đủ.)",
-    "latency_ms": 631.74
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Rất tiếc, hệ thống không tìm thấy dữ liệu dinh dưỡng và giá cả cho món \"Sushi cá ngừ đại dương\". Bạn có muốn tra cứu một món ăn khác tương tự (ví dụ: \"Sushi cá hồi\" hoặc \"Sushi\") không?",
+    "latency_ms": 1664.78
   }
 ]
