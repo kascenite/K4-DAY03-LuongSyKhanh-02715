@@ -1,24 +1,62 @@
 [
   {
     "step": 1,
-    "query": "Hãy đảm bảo thực đơn cho 3 ngày tới của tôi phù hợp",
+    "query": "Tôi muốn bạn thêm món bún chả vào sáng thứ ba",
     "action_type": "TOOL_EXECUTION",
     "tool_name": "food_lookup",
     "arguments": {
-      "food_name": "Phở bò"
+      "food_name": "bún chả"
     },
     "observation": {
-      "status": "NOT_FOUND",
-      "message": "Không tìm thấy dữ liệu dinh dưỡng cho món 'Phở bò'"
+      "status": "SUCCESS",
+      "food_name": "Bún chả",
+      "data": {
+        "calories": 550,
+        "protein_g": 22,
+        "carbs_g": 60,
+        "fat_g": 20,
+        "price_vnd": 40000,
+        "meal_type": "Trưa"
+      }
     },
-    "latency_ms": 1386.11
+    "latency_ms": 1012.73
   },
   {
     "step": 2,
-    "query": "Hãy đảm bảo thực đơn cho 3 ngày tới của tôi phù hợp",
+    "query": "Tôi muốn bạn thêm món bún chả vào sáng thứ ba",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "add_meal_to_plan",
+    "arguments": {
+      "meal_slot": "Sáng",
+      "day": "Thứ Ba",
+      "food_name": "Bún chả"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "booking": {
+        "day": "Thứ Ba",
+        "meal_slot": "Sáng",
+        "food_name": "Bún chả",
+        "calories": 550,
+        "price_vnd": 40000
+      },
+      "week_summary": {
+        "total_spent_vnd": 130000,
+        "remaining_budget_vnd": 570000,
+        "total_calories_today": 930,
+        "daily_calorie_target": 2000
+      },
+      "message": "Đã thêm 'Bún chả' vào bữa Sáng ngày Thứ Ba.",
+      "variation_warning": "Món 'Bún chả' đã được lên kế hoạch vào Thứ Hai (gần Thứ Ba), nên đa dạng hóa thực đơn."
+    },
+    "latency_ms": 1045.63
+  },
+  {
+    "step": 3,
+    "query": "Tôi muốn bạn thêm món bún chả vào sáng thứ ba",
     "action_type": "FINAL_ANSWER",
     "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
-    "output": "Rất tiếc, hệ thống hiện không tìm thấy dữ liệu dinh dưỡng cho món \"Phở bò\". Để đảm bảo thực đơn cho 3 ngày tới của bạn phù hợp với mục tiêu ~2000 calories/ngày và ngân sách ~700.000đ/tuần, bạn vui lòng cung cấp tên các món ăn khác mà bạn muốn đưa vào thực đơn.\n\nSau khi bạn cung cấp tên món, tôi sẽ thực hiện các bước sau:\n1. **Tra cứu** thông tin dinh dưỡng và giá cả của món ăn đó.\n2. **Kiểm tra** xem món ăn có phù hợp với ngân sách và mục tiêu calories của bạn không.\n3. **Thêm vào kế hoạch** ăn uống cho 3 ngày tới (đảm bảo không lặp lại món trong 3 ngày liên tiếp).\n\nBạn muốn bắt đầu với món ăn nào cho bữa sáng ngày mai?",
-    "latency_ms": 1550.96
+    "output": "Tôi đã thêm món Bún chả vào bữa Sáng thứ Ba cho bạn.\n\nDưới đây là tóm tắt tình hình kế hoạch tuần của bạn:\n*   **Chi phí đã dùng:** 130.000đ (còn lại 570.000đ trong ngân sách 700.000đ).\n*   **Calories bữa sáng:** 550 kcal (tổng calories hôm nay của bạn là 930/2000 kcal).\n\n**Lưu ý:** Hệ thống cảnh báo rằng món Bún chả đã xuất hiện vào thứ Hai, vì vậy để đảm bảo sự đa dạng cho thực đơn, bạn nên cân nhắc chọn món khác cho các bữa tiếp theo nhé!",
+    "latency_ms": 1528.88
   }
 ]
