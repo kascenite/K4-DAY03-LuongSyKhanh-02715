@@ -1,180 +1,24 @@
 [
   {
     "step": 1,
-    "query": "Chào bạn, một chế độ ăn cân bằng dinh dưỡng cần đảm bảo những nhóm chất nào?",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
-    "output": "Một chế độ ăn cân bằng và lành mạnh cần đảm bảo cung cấp đầy đủ **4 nhóm chất dinh dưỡng thiết yếu** sau đây cho cơ thể:\n\n1. **Nhóm chất bột đường (Carbohydrates):**\n   * **Vai trò:** Là nguồn cung cấp năng lượng chính và nhanh chóng cho mọi hoạt động của cơ thể, đặc biệt là não bộ và cơ bắp.\n   * **Nguồn thực phẩm:** Gạo, bánh mì, bún, phở, khoai lang, khoai tây, ngô, ngũ cốc nguyên hạt...\n\n2. **Nhóm chất đạm (Protein):**\n   * **Vai trò:** Là nguyên liệu xây dựng và tái tạo các tế bào, cơ bắp, da, tóc, đồng thời tham gia vào quá trình sản xuất enzyme, hormone và tăng cường hệ miễn dịch.\n   * **Nguồn thực phẩm:** Thịt (heo, bò, gà), cá, hải sản, trứng, sữa và các chế phẩm từ sữa, các loại đậu (đậu nành, đậu xanh, đậu đen...).\n\n3. **Nhóm chất béo (Lipids/Fats):**\n   * **Vai trò:** Cung cấp nguồn năng lượng dự trữ dồi dào, giúp hấp thụ các vitamin tan trong chất béo (như Vitamin A, D, E, K), bảo vệ các cơ quan nội tạng và hỗ trợ hoạt động của não bộ. Nên ưu tiên chất béo không bão hòa (chất béo tốt).\n   * **Nguồn thực phẩm:** Dầu thực vật (dầu ô liu, dầu đậu nành), mỡ cá, bơ, các loại hạt (hạt điều, hạnh nhân, óc chó...).\n\n4. **Nhóm Vitamin và Khoáng chất (Micronutrients):**\n   * **Vai trò:** Mặc dù cơ thể chỉ cần một lượng nhỏ, nhưng chúng đóng vai trò cực kỳ quan trọng trong việc điều hòa các quá trình sinh hóa, tăng sức đề kháng và bảo vệ cơ thể khỏi bệnh tật.\n   * **Nguồn thực phẩm:** Các loại rau xanh, củ quả, trái cây tươi, các loại hạt...\n\n**Hai yếu tố quan trọng khác không thể thiếu:**\n* **Chất xơ:** Giúp hệ tiêu hóa hoạt động khỏe mạnh, ngăn ngừa táo bón và hỗ trợ kiểm soát đường huyết, cholesterol.\n* **Nước:** Chiếm khoảng 60-70% trọng lượng cơ thể, cần thiết cho mọi quá trình trao đổi chất, vận chuyển dinh dưỡng và đào thải độc tố. Bạn nên uống đủ từ 1.5 - 2 lít nước mỗi ngày.",
-    "latency_ms": 6367.48
-  },
-  {
-    "step": 1,
-    "query": "Hãy tra cứu thông tin dinh dưỡng và giá của món Phở bò tái.",
+    "query": "Hãy đảm bảo thực đơn cho 3 ngày tới của tôi phù hợp",
     "action_type": "TOOL_EXECUTION",
     "tool_name": "food_lookup",
     "arguments": {
-      "food_name": "Phở bò tái"
-    },
-    "observation": {
-      "status": "SUCCESS",
-      "food_name": "Phở bò tái",
-      "data": {
-        "calories": 480,
-        "protein_g": 25,
-        "carbs_g": 55,
-        "fat_g": 12,
-        "price_vnd": 45000,
-        "meal_type": "Sáng/Trưa"
-      }
-    },
-    "latency_ms": 1729.2
-  },
-  {
-    "step": 2,
-    "query": "Hãy tra cứu thông tin dinh dưỡng và giá của món Phở bò tái.",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
-    "output": "Dựa trên kết quả tra cứu, dưới đây là thông tin dinh dưỡng và giá của món **Phở bò tái**:\n\n*   **Giá tiền:** 45.000 VNĐ\n*   **Hàm lượng dinh dưỡng:**\n    *   **Calories:** 480 kcal\n    *   **Protein (Chất đạm):** 25g\n    *   **Carbs (Tinh bột):** 55g\n    *   **Fat (Chất béo):** 12g\n*   **Bữa ăn phù hợp:** Sáng hoặc Trưa.",
-    "latency_ms": 3647.01
-  },
-  {
-    "step": 1,
-    "query": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
-    "action_type": "TOOL_EXECUTION",
-    "tool_name": "food_lookup",
-    "arguments": {
-      "food_name": "Salad ức gà"
-    },
-    "observation": {
-      "status": "SUCCESS",
-      "food_name": "Salad ức gà",
-      "data": {
-        "calories": 380,
-        "protein_g": 32,
-        "carbs_g": 18,
-        "fat_g": 16,
-        "price_vnd": 50000,
-        "meal_type": "Trưa/Tối"
-      }
-    },
-    "latency_ms": 2460.67
-  },
-  {
-    "step": 2,
-    "query": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
-    "action_type": "TOOL_EXECUTION",
-    "tool_name": "add_meal_to_plan",
-    "arguments": {
-      "food_name": "Salad ức gà",
-      "day": "Thứ Ba",
-      "meal_slot": "Trưa"
-    },
-    "observation": {
-      "status": "SUCCESS",
-      "booking": {
-        "day": "Thứ Ba",
-        "meal_slot": "Trưa",
-        "food_name": "Salad ức gà",
-        "calories": 380,
-        "price_vnd": 50000
-      },
-      "week_summary": {
-        "total_spent_vnd": 50000,
-        "remaining_budget_vnd": 650000,
-        "total_calories_today": 380,
-        "daily_calorie_target": 2000
-      },
-      "message": "Đã thêm 'Salad ức gà' vào bữa Trưa ngày Thứ Ba."
-    },
-    "latency_ms": 1625.6
-  },
-  {
-    "step": 3,
-    "query": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
-    "output": "Tôi đã thêm thành công món **Salad ức gà** vào bữa **Trưa** ngày **Thứ Ba** cho bạn. \n\nDưới đây là thông tin chi tiết và cập nhật kế hoạch của bạn:\n*   **Thông tin món ăn:**\n    *   **Lượng calo:** 380 kcal (Protein: 32g, Carbs: 18g, Fat: 16g)\n    *   **Giá tiền:** 50.000đ\n*   **Cập nhật kế hoạch:**\n    *   **Tổng calo đã tích lũy cho Thứ Ba:** 380 / 2.000 kcal (mục tiêu ngày)\n    *   **Tổng chi tiêu trong tuần:** 50.000đ\n    *   **Ngân sách còn lại:** 650.000đ / 700.000đ\n\nBạn có muốn tiếp tục lên kế hoạch cho các bữa ăn khác không?",
-    "latency_ms": 4918.55
-  },
-  {
-    "step": 1,
-    "query": "Tôi muốn ăn tối nay trong ngân sách còn lại của tuần, hãy tra cứu món Cơm tấm sườn rồi thêm vào kế hoạch bữa tối Thứ Tư giúp tôi.",
-    "action_type": "TOOL_EXECUTION",
-    "tool_name": "food_lookup",
-    "arguments": {
-      "food_name": "Cơm tấm sườn"
-    },
-    "observation": {
-      "status": "SUCCESS",
-      "food_name": "Cơm tấm sườn",
-      "data": {
-        "calories": 700,
-        "protein_g": 28,
-        "carbs_g": 75,
-        "fat_g": 28,
-        "price_vnd": 38000,
-        "meal_type": "Trưa/Tối"
-      }
-    },
-    "latency_ms": 1527.3
-  },
-  {
-    "step": 2,
-    "query": "Tôi muốn ăn tối nay trong ngân sách còn lại của tuần, hãy tra cứu món Cơm tấm sườn rồi thêm vào kế hoạch bữa tối Thứ Tư giúp tôi.",
-    "action_type": "TOOL_EXECUTION",
-    "tool_name": "add_meal_to_plan",
-    "arguments": {
-      "food_name": "Cơm tấm sườn",
-      "day": "Thứ Tư",
-      "meal_slot": "Tối"
-    },
-    "observation": {
-      "status": "SUCCESS",
-      "booking": {
-        "day": "Thứ Tư",
-        "meal_slot": "Tối",
-        "food_name": "Cơm tấm sườn",
-        "calories": 700,
-        "price_vnd": 38000
-      },
-      "week_summary": {
-        "total_spent_vnd": 88000,
-        "remaining_budget_vnd": 612000,
-        "total_calories_today": 700,
-        "daily_calorie_target": 2000
-      },
-      "message": "Đã thêm 'Cơm tấm sườn' vào bữa Tối ngày Thứ Tư."
-    },
-    "latency_ms": 2964.12
-  },
-  {
-    "step": 3,
-    "query": "Tôi muốn ăn tối nay trong ngân sách còn lại của tuần, hãy tra cứu món Cơm tấm sườn rồi thêm vào kế hoạch bữa tối Thứ Tư giúp tôi.",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
-    "output": "Tôi đã tra cứu thông tin dinh dưỡng và thêm món **Cơm tấm sườn** vào kế hoạch ăn uống của bạn thành công. Dưới đây là chi tiết:\n\n*   **Thông tin món ăn (Cơm tấm sườn):**\n    *   **Năng lượng:** 700 calories (Protein: 28g, Carbs: 75g, Fat: 28g)\n    *   **Giá tiền:** 38.000đ\n*   **Cập nhật kế hoạch:**\n    *   Đã thêm vào bữa **Tối** ngày **Thứ Tư**.\n    *   **Tổng lượng calories hôm nay (Thứ Tư):** 700 / 2.000 calories mục tiêu.\n    *   **Ngân sách tuần còn lại:** 612.000đ (Đã chi tiêu: 88.000đ).",
-    "latency_ms": 2431.52
-  },
-  {
-    "step": 1,
-    "query": "Tra cứu thông tin dinh dưỡng của món 'Sushi cá ngừ đại dương' giúp tôi.",
-    "action_type": "TOOL_EXECUTION",
-    "tool_name": "food_lookup",
-    "arguments": {
-      "food_name": "Sushi cá ngừ đại dương"
+      "food_name": "Phở bò"
     },
     "observation": {
       "status": "NOT_FOUND",
-      "message": "Không tìm thấy dữ liệu dinh dưỡng cho món 'Sushi cá ngừ đại dương'"
+      "message": "Không tìm thấy dữ liệu dinh dưỡng cho món 'Phở bò'"
     },
-    "latency_ms": 1931.07
+    "latency_ms": 1386.11
   },
   {
     "step": 2,
-    "query": "Tra cứu thông tin dinh dưỡng của món 'Sushi cá ngừ đại dương' giúp tôi.",
+    "query": "Hãy đảm bảo thực đơn cho 3 ngày tới của tôi phù hợp",
     "action_type": "FINAL_ANSWER",
     "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
-    "output": "Rất tiếc, hệ thống không tìm thấy dữ liệu dinh dưỡng và giá cả cho món \"Sushi cá ngừ đại dương\". Bạn có muốn tra cứu một món ăn khác tương tự (ví dụ: \"Sushi cá hồi\" hoặc \"Sushi\") không?",
-    "latency_ms": 1664.78
+    "output": "Rất tiếc, hệ thống hiện không tìm thấy dữ liệu dinh dưỡng cho món \"Phở bò\". Để đảm bảo thực đơn cho 3 ngày tới của bạn phù hợp với mục tiêu ~2000 calories/ngày và ngân sách ~700.000đ/tuần, bạn vui lòng cung cấp tên các món ăn khác mà bạn muốn đưa vào thực đơn.\n\nSau khi bạn cung cấp tên món, tôi sẽ thực hiện các bước sau:\n1. **Tra cứu** thông tin dinh dưỡng và giá cả của món ăn đó.\n2. **Kiểm tra** xem món ăn có phù hợp với ngân sách và mục tiêu calories của bạn không.\n3. **Thêm vào kế hoạch** ăn uống cho 3 ngày tới (đảm bảo không lặp lại món trong 3 ngày liên tiếp).\n\nBạn muốn bắt đầu với món ăn nào cho bữa sáng ngày mai?",
+    "latency_ms": 1550.96
   }
 ]

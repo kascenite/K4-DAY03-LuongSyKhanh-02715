@@ -9,7 +9,7 @@ import json
 from typing import Dict, Any, List
 from dotenv import load_dotenv
 
-from tools import MOCK_DATABASE
+from tools import get_all_food_names
 
 if sys.stdout.encoding != 'utf-8':
     try:
@@ -51,7 +51,8 @@ class MockOfflineProvider(BaseLLMProvider):
         # Mô phỏng nhận diện intent gọi Tool: chỉ gọi Tool khi câu hỏi thực sự yêu cầu tra cứu/thêm
         # vào kế hoạch — tên món ăn xuất hiện trong câu (vd: chia sẻ sở thích) mà không có yêu cầu
         # cụ thể thì không kích hoạt gọi Tool.
-        mentioned_food = next((name for name in MOCK_DATABASE.keys() if name.lower() in prompt_lower), None)
+        food_names = get_all_food_names()
+        mentioned_food = next((name for name in food_names if name.lower() in prompt_lower), None)
         action_verbs = ["thêm", "đặt", "lên kế hoạch", "book"]
         lookup_verbs = ["tra cứu", "thông tin", "giá", "calories", "dinh dưỡng", "bao nhiêu", "là gì", "gợi ý", "đề xuất", "nên ăn"]
         has_lookup_intent = any(v in prompt_lower for v in lookup_verbs)
@@ -67,7 +68,7 @@ class MockOfflineProvider(BaseLLMProvider):
             return {
                 "type": "tool_call",
                 "tool_name": "food_lookup",
-                "arguments": {"food_name": mentioned_food or next(iter(MOCK_DATABASE))},
+                "arguments": {"food_name": mentioned_food or food_names[0]},
                 "thought": f"Người dùng muốn tra cứu thông tin dinh dưỡng/giá của món ăn. Tôi sẽ gọi tool food_lookup."
             }
         else:

@@ -109,8 +109,11 @@ Học viên làm bài lần lượt theo đúng luồng 3 bước tinh giản d�
 │   ├── 📄 prompts.py            <-- 🛡️ System Prompts cho Chatbot và ReAct Agent
 │   ├── 📄 providers.py          <-- 🔌 Multi-Provider LLM Adapter (Gemini/OpenAI/Mock)
 │   ├── 📄 app.py                <-- 🚀 MCP Client & Core Agent App ghép nối ReAct Loop & Trace Log
+│   ├── 📄 web_app.py            <-- 🌐 [BONUS] Flask server cho giao diện so sánh trực quan
 │   └── 📁 ai_levels/            <-- 📚 [REFERENCE ONLY] Code mẫu kiến trúc tham khảo (Không sửa/debug)
 │       └── 📄 README.md         <-- ⚠️ Chú thích mã nguồn tham khảo
+│
+├── 📁 web/                      <-- 🖥️ [BONUS] Giao diện web tĩnh (index.html) cho web_app.py
 │
 └── 📁 docs/                     <-- 📚 TÀI LIỆU HƯỚNG DẪN CHUẨN VLEARN CODELAB
     ├── 📄 DANH_SACH_DE_TAI.md    <-- 💡 Gợi ý chủ đề theo Lĩnh vực & Đề tài Mở
@@ -128,3 +131,16 @@ Học viên làm bài lần lượt theo đúng luồng 3 bước tinh giản d�
 | **2. ReAct Loop & MCP Integration** | **35%** | Vòng lặp ReAct chạy mượt mà qua Native Tool Calling & MCP Server **trên LLM API thật (Gemini/OpenAI)**. | Code trong `src/mcp_server.py` + `src/tools.py` + `src/app.py` + Log API thật. |
 | **3. Waterfall Trace & Observation** | **25%** | File log `trace_waterfall.json` trích xuất đầy đủ chuỗi suy luận Thought $\rightarrow$ Action $\rightarrow$ Observation. | File log `docs/trace_waterfall.json` + `docs/trace_eval.md`. |
 | **4. Git Repository & Submission** | **15%** | Cấu trúc Repo sạch sẽ, commit chuẩn chỉ và nộp đúng hạn trên LMS VLearn. | Link Repo GitHub cá nhân. |
+
+---
+
+## 🌐 7. BONUS: GIAO DIỆN SO SÁNH TRỰC QUAN (KHÔNG TÍNH ĐIỂM RUBRIC)
+
+Ngoài CLI, repo có thêm một giao diện web nhỏ để so sánh trực tiếp **Chatbot Baseline (Cấp 2)** và **ReAct Agent (Cấp 3)** cho cùng một câu hỏi, hiển thị đầy đủ Thought → Action → Observation → Final Answer theo thời gian thực.
+
+```bash
+python src/web_app.py
+# Mở trình duyệt tại http://localhost:5000
+```
+
+File giao diện nằm ở `web/index.html`, server nhỏ ở `src/web_app.py` — chỉ gọi lại các hàm đã có (`run_react_agent`, `get_llm_provider`, ...), không thay đổi logic CLI/agent gốc.

@@ -22,8 +22,6 @@
 
 > ⚠️ **YÊU CẦU NGHIỆM THU:** Mở tệp `.env` điền `GEMINI_API_KEY` (hoặc `OPENAI_API_KEY`) để kết nối LLM thật trước khi thực thi `python src/app.py --all`. Bài nộp chỉ dùng Mock Offline Provider sẽ không đạt điểm nghiệm thực tế.
 
-Dán 1 đoạn trích xuất log tiêu biểu từ file `docs/trace_waterfall.json` sinh ra từ phản hồi LLM API thật (trích từ **TC04** — minh chứng vòng lặp ReAct đa bước thật sự: `food_lookup` → `add_meal_to_plan` → Final Answer do chính LLM tổng hợp, chạy với `GeminiProvider` / `gemini-3.5-flash`):
-
 ```json
 [
   {

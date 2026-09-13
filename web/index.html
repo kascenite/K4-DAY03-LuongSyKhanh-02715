@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trợ lý Ăn uống — ReAct Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --color-bg: #FBFCF8;
+    --color-surface: #FFFFFF;
+    --color-primary: #1E9E5A;
+    --color-primary-ink: #FFFFFF;
+    --color-accent: #FF7A33;
+    --color-ink: #12261B;
+    --color-muted: #EEF7EF;
+    --color-muted-ink: #4B6156;
+    --color-border: #D8ECDD;
+    --color-danger: #E1483A;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #0E1912;
+      --color-surface: #16261C;
+      --color-muted: #1E3226;
+      --color-muted-ink: #9FC2AC;
+      --color-border: #2B4536;
+      --color-ink: #EAF6EE;
+      --color-primary: #34C97B;
+      --color-accent: #FFA35C;
+    }
+  }
+  html, body { background: var(--color-bg); color: var(--color-ink); }
+  body { font-family: 'Be Vietnam Pro', system-ui, sans-serif; }
+  h1, h2, .display { font-family: 'Sora', system-ui, sans-serif; }
+  .surface { background: var(--color-surface); border: 1px solid var(--color-border); }
+  .chip {
+    background: var(--color-muted); color: var(--color-ink);
+    border: 1px solid var(--color-border);
+  }
+  .chip:hover { background: var(--color-border); }
+  .btn-primary { background: var(--color-primary); color: var(--color-primary-ink); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-danger { background: var(--color-danger); color: #fff; }
+  .btn-danger:hover { filter: brightness(1.08); }
+  .ring-focus:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .msg-enter {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: msg-in 260ms ease forwards;
+  }
+  @keyframes msg-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .msg-enter { animation: none; opacity: 1; transform: none; }
+  }
+  .bubble-user {
+    background: var(--color-primary); color: var(--color-primary-ink);
+    border-radius: 18px 18px 4px 18px;
+  }
+  .bubble-agent {
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    border-radius: 18px 18px 18px 4px;
+  }
+  .trace-rail {
+    border-left: 2px solid var(--color-border);
+    padding-left: 12px;
+    margin-left: 4px;
+  }
+  .obs-pre {
+    background: var(--color-muted); color: var(--color-ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .badge-tool {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--color-muted); border: 1px solid var(--color-border);
+  }
+  .typing-dot {
+    width: 6px; height: 6px; border-radius: 999px; background: var(--color-muted-ink);
+    animation: typing-bounce 1s infinite ease-in-out;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes typing-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .typing-dot { animation: none; opacity: 1; }
+  }
+  #plan-grid td, #plan-grid th {
+    border: 1px solid var(--color-border);
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  #plan-grid th { background: var(--color-muted); font-weight: 600; }
+  .plan-cell { cursor: pointer; min-width: 90px; }
+  .plan-cell:hover { background: var(--color-muted); }
+  .plan-cell.plan-window { background: var(--color-muted); }
+  .plan-cell.plan-repeat { outline: 2px solid var(--color-danger); outline-offset: -2px; }
+  .status-pill {
+    background: var(--color-muted); color: var(--color-muted-ink);
+    border: 1px solid var(--color-border);
+  }
+  .status-pill.status-warn {
+    background: color-mix(in srgb, var(--color-danger) 12%, var(--color-surface));
+    color: var(--color-danger); border-color: var(--color-danger);
+  }
+  .mock-badge { color: var(--color-danger); }
+</style>
+</head>
+<body class="min-h-screen">
+  <div class="max-w-3xl mx-auto px-4 py-8 sm:px-6">
+    <header class="mb-6">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 class="display text-2xl sm:text-3xl font-bold" style="color: var(--color-primary)">
+            Trợ lý Ăn uống
+          </h1>
+          <p class="mt-1 text-sm sm:text-base" style="color: var(--color-muted-ink)">
+            ReAct Agent (MCP-Enhanced) — tra cứu dinh dưỡng và lên kế hoạch ăn uống theo ngân sách tuần của bạn.
+          </p>
+        </div>
+        <span id="status-pill" class="status-pill rounded-full px-3 py-1.5 text-xs font-medium shrink-0" role="status"></span>
+      </div>
+    </header>
+
+    <div id="chat-log" class="space-y-4 mb-4"></div>
+
+    <form id="query-form" class="mb-3">
+      <label for="query-input" class="sr-only">Câu hỏi của bạn</label>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input
+          id="query-input"
+          type="text"
+          autocomplete="off"
+          placeholder="Hỏi về món ăn, dinh dưỡng, hoặc thêm vào kế hoạch tuần..."
+          class="ring-focus flex-1 rounded-xl px-4 py-3 text-sm sm:text-base surface"
+          style="color: var(--color-ink)"
+        />
+        <button
+          id="send-btn"
+          type="submit"
+          class="ring-focus btn-primary rounded-xl px-5 py-3 text-sm sm:text-base font-medium flex items-center justify-center gap-2 min-h-[44px]"
+        >
+          <span>Gửi</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+            <path d="M3.4 2.6a.75.75 0 0 0-.936.96l1.85 5.55a.75.75 0 0 0 .71.51h6.45a.75.75 0 0 1 0 1.5H5.024a.75.75 0 0 0-.71.51l-1.85 5.55a.75.75 0 0 0 .936.96 60.7 60.7 0 0 0 16.457-7.454.75.75 0 0 0 0-1.294A60.7 60.7 0 0 0 3.4 2.6Z" />
+          </svg>
+        </button>
+      </div>
+    </form>
+
+    <div class="flex items-center justify-between gap-2 mb-8 flex-wrap">
+      <div id="example-chips" class="flex flex-wrap gap-2" aria-label="Câu hỏi mẫu"></div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          id="clear-chat"
+          type="button"
+          class="ring-focus chip rounded-full px-3 py-2 text-xs sm:text-sm flex items-center gap-1.5"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482 41.03 41.03 0 0 0-2.365-.298V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4Z" clip-rule="evenodd" />
+          </svg>
+          Xóa hội thoại
+        </button>
+        <button
+          id="settings-toggle"
+          type="button"
+          class="ring-focus chip rounded-full px-3 py-2 text-xs sm:text-sm flex items-center gap-1.5"
+          aria-expanded="false"
+          aria-controls="settings-panel"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8.34 1.804A1 1 0 0 1 9.32 1h1.36a1 1 0 0 1 .98.804l.295 1.473c.497.144.971.342 1.416.587l1.25-.834a1 1 0 0 1 1.262.125l.962.962a1 1 0 0 1 .125 1.262l-.834 1.25c.245.445.443.919.587 1.416l1.473.294a1 1 0 0 1 .804.98v1.361a1 1 0 0 1-.804.98l-1.473.295a6.95 6.95 0 0 1-.587 1.416l.834 1.25a1 1 0 0 1-.125 1.262l-.962.962a1 1 0 0 1-1.262.125l-1.25-.834a6.953 6.953 0 0 1-1.416.587l-.294 1.473a1 1 0 0 1-.98.804H9.32a1 1 0 0 1-.98-.804l-.295-1.473a6.957 6.957 0 0 1-1.416-.587l-1.25.834a1 1 0 0 1-1.262-.125l-.962-.962a1 1 0 0 1-.125-1.262l.834-1.25a6.957 6.957 0 0 1-.587-1.416l-1.473-.294A1 1 0 0 1 1 10.68V9.32a1 1 0 0 1 .804-.98l1.473-.295c.144-.497.342-.971.587-1.416l-.834-1.25a1 1 0 0 1 .125-1.262l.962-.962A1 1 0 0 1 5.38 3.03l1.25.834a6.957 6.957 0 0 1 1.416-.587l.294-1.473ZM13 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd" />
+          </svg>
+          Cài đặt
+        </button>
+      </div>
+    </div>
+
+    <div id="settings-panel" hidden class="surface rounded-2xl p-4 mb-8">
+      <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
+        <div class="flex-1">
+          <label for="budget-input" class="block text-xs mb-1" style="color: var(--color-muted-ink)">Ngân sách tuần (VNĐ)</label>
+          <input id="budget-input" type="number" min="50000" max="10000000" step="10000"
+            class="ring-focus w-full rounded-lg px-3 py-2 text-sm surface" style="color: var(--color-ink)" />
+        </div>
+        <div class="flex-1">
+          <label for="calorie-input" class="block text-xs mb-1" style="color: var(--color-muted-ink)">Mục tiêu calories/ngày</label>
+          <input id="calorie-input" type="number" min="800" max="5000" step="50"
+            class="ring-focus w-full rounded-lg px-3 py-2 text-sm surface" style="color: var(--color-ink)" />
+        </div>
+        <button id="settings-save" type="button" class="ring-focus btn-primary rounded-lg px-4 py-2 text-sm font-medium min-h-[40px]">
+          Lưu
+        </button>
+        <button id="plan-reset" type="button" class="ring-focus btn-danger rounded-lg px-4 py-2 text-sm font-medium min-h-[40px]">
+          Reset tuần
+        </button>
+      </div>
+      <p id="settings-message" class="text-xs mt-2" role="status" style="color: var(--color-muted-ink)"></p>
+    </div>
+
+    <section class="surface rounded-2xl p-4 sm:p-5">
+      <h2 class="text-base sm:text-lg font-semibold mb-1">Kế hoạch ăn uống tuần</h2>
+      <p class="text-xs mb-3" style="color: var(--color-muted-ink)">
+        Nhấn vào một ô đã có món để xem cửa sổ 3 ngày liên tiếp dùng để kiểm tra đa dạng món ăn (viền đỏ = món bị lặp lại trong cửa sổ đó).
+      </p>
+      <div class="overflow-x-auto">
+        <table id="plan-grid" class="w-full text-xs border-collapse min-w-[640px]">
+          <thead>
+            <tr id="plan-grid-head"></tr>
+          </thead>
+          <tbody id="plan-grid-body"></tbody>
+        </table>
+      </div>
+      <p class="text-xs mt-3" style="color: var(--color-muted-ink)">
+        Đã dùng: <span id="plan-spent" class="font-medium"></span> / <span id="plan-budget" class="font-medium"></span>
+        — Còn lại: <span id="plan-remaining" class="font-medium"></span>
+      </p>
+    </section>
+  </div>
+
+<script>
+(function () {
+  const WEEKDAYS = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
+  const MEAL_SLOTS = ['Sáng', 'Trưa', 'Tối'];
+
+  const form = document.getElementById('query-form');
+  const input = document.getElementById('query-input');
+  const sendBtn = document.getElementById('send-btn');
+  const chipsEl = document.getElementById('example-chips');
+  const chatLog = document.getElementById('chat-log');
+  const statusPill = document.getElementById('status-pill');
+  const clearChatBtn = document.getElementById('clear-chat');
+
+  const settingsToggle = document.getElementById('settings-toggle');
+  const settingsPanel = document.getElementById('settings-panel');
+  const budgetInput = document.getElementById('budget-input');
+  const calorieInput = document.getElementById('calorie-input');
+  const settingsSave = document.getElementById('settings-save');
+  const settingsMessage = document.getElementById('settings-message');
+  const planReset = document.getElementById('plan-reset');
+
+  const planGridHead = document.getElementById('plan-grid-head');
+  const planGridBody = document.getElementById('plan-grid-body');
+  const planSpentEl = document.getElementById('plan-spent');
+  const planBudgetEl = document.getElementById('plan-budget');
+  const planRemainingEl = document.getElementById('plan-remaining');
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // Very small, deliberately non-exhaustive markdown-ish formatter (bold + line breaks)
+  function formatText(text) {
+    const escaped = escapeHtml(text || '');
+    const bolded = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return bolded.replace(/\n/g, '<br>');
+  }
+
+  function fmtVnd(n) {
+    return `${(n || 0).toLocaleString('vi-VN')}đ`;
+  }
+
+  function loadStatus() {
+    fetch('/api/status')
+      .then((r) => r.json())
+      .then((status) => {
+        if (status.configured) {
+          statusPill.classList.remove('status-warn');
+          statusPill.textContent = `🔌 ${status.provider} · ${status.model || 'n/a'}`;
+        } else {
+          statusPill.classList.add('status-warn');
+          statusPill.textContent = '⚠️ Chưa cấu hình API Key';
+        }
+      })
+      .catch(() => {
+        statusPill.classList.add('status-warn');
+        statusPill.textContent = '⚠️ Không kết nối được server';
+      });
+  }
+
+  function showWelcomeMessage() {
+    chatLog.innerHTML = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-enter flex justify-start';
+    wrap.innerHTML = `
+      <div class="bubble-agent px-4 py-2.5 text-sm max-w-[90%]">
+        👋 Xin chào! Hỏi mình về dinh dưỡng, tra cứu thông tin món ăn, hoặc yêu cầu thêm món vào kế hoạch ăn uống tuần của bạn.
+      </div>`;
+    chatLog.appendChild(wrap);
+  }
+
+  clearChatBtn.addEventListener('click', () => {
+    showWelcomeMessage();
+  });
+
+  function loadExamples() {
+    fetch('/api/examples')
+      .then((r) => r.json())
+      .then((examples) => {
+        chipsEl.innerHTML = '';
+        examples.forEach((ex) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'chip ring-focus rounded-full px-3 py-2 text-xs sm:text-sm text-left max-w-full truncate';
+          btn.title = ex.question;
+          btn.textContent = `${ex.id} · ${ex.question}`;
+          btn.addEventListener('click', () => {
+            input.value = ex.question;
+            form.requestSubmit();
+          });
+          chipsEl.appendChild(btn);
+        });
+      })
+      .catch(() => {
+        chipsEl.innerHTML = '';
+      });
+  }
+
+  // ----- Settings + weekly plan grid -----
+
+  let currentPlan = { week_budget_vnd: 0, daily_calorie_target: 0, entries: [], total_spent_vnd: 0, remaining_budget_vnd: 0 };
+
+  function dayIndex(day) {
+    return WEEKDAYS.indexOf(day);
+  }
+
+  function renderPlanGrid() {
+    planGridHead.innerHTML = '<th></th>' + WEEKDAYS.map((d) => `<th>${escapeHtml(d)}</th>`).join('');
+    planGridBody.innerHTML = '';
+
+    MEAL_SLOTS.forEach((slot) => {
+      const tr = document.createElement('tr');
+      const rowHeader = document.createElement('th');
+      rowHeader.textContent = slot;
+      tr.appendChild(rowHeader);
+
+      WEEKDAYS.forEach((day) => {
+        const td = document.createElement('td');
+        td.className = 'plan-cell';
+        const match = currentPlan.entries.find((e) => e.day === day && e.meal_slot === slot);
+        if (match) {
+          td.textContent = match.food_name;
+          td.dataset.day = day;
+          td.addEventListener('click', () => highlightWindow(day));
+        } else {
+          td.textContent = '—';
+          td.style.color = 'var(--color-muted-ink)';
+        }
+        tr.appendChild(td);
+      });
+      planGridBody.appendChild(tr);
+    });
+
+    planSpentEl.textContent = fmtVnd(currentPlan.total_spent_vnd);
+    planBudgetEl.textContent = fmtVnd(currentPlan.week_budget_vnd);
+    planRemainingEl.textContent = fmtVnd(currentPlan.remaining_budget_vnd);
+  }
+
+  function highlightWindow(centerDay) {
+    const centerIdx = dayIndex(centerDay);
+    document.querySelectorAll('.plan-cell').forEach((td) => {
+      td.classList.remove('plan-window', 'plan-repeat');
+    });
+
+    const windowDays = WEEKDAYS.filter((d) => Math.abs(dayIndex(d) - centerIdx) <= 2);
+    const windowEntries = currentPlan.entries.filter((e) => windowDays.includes(e.day));
+    const nameCounts = {};
+    windowEntries.forEach((e) => {
+      nameCounts[e.food_name] = (nameCounts[e.food_name] || 0) + 1;
+    });
+
+    document.querySelectorAll('.plan-cell').forEach((td) => {
+      if (!td.dataset.day || !windowDays.includes(td.dataset.day)) return;
+      td.classList.add('plan-window');
+      const text = td.textContent;
+      if (nameCounts[text] > 1) td.classList.add('plan-repeat');
+    });
+  }
+
+  function loadPlan() {
+    return fetch('/api/plan')
+      .then((r) => r.json())
+      .then((plan) => {
+        currentPlan = plan;
+        budgetInput.value = plan.week_budget_vnd;
+        calorieInput.value = plan.daily_calorie_target;
+        renderPlanGrid();
+      })
+      .catch(() => {});
+  }
+
+  settingsToggle.addEventListener('click', () => {
+    const isHidden = settingsPanel.hidden;
+    settingsPanel.hidden = !isHidden;
+    settingsToggle.setAttribute('aria-expanded', String(isHidden));
+  });
+
+  settingsSave.addEventListener('click', () => {
+    settingsMessage.textContent = '';
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        week_budget_vnd: Number(budgetInput.value),
+        daily_calorie_target: Number(calorieInput.value),
+      }),
+    })
+      .then(async (r) => {
+        const body = await r.json();
+        if (!r.ok) throw new Error(body.error || `HTTP ${r.status}`);
+        currentPlan = body;
+        renderPlanGrid();
+        settingsMessage.textContent = 'Đã lưu cài đặt.';
+        settingsMessage.style.color = 'var(--color-primary)';
+      })
+      .catch((err) => {
+        settingsMessage.textContent = err.message;
+        settingsMessage.style.color = 'var(--color-danger)';
+      });
+  });
+
+  planReset.addEventListener('click', () => {
+    if (!confirm('Xóa toàn bộ kế hoạch ăn uống tuần hiện tại?')) return;
+    fetch('/api/plan/reset', { method: 'POST' })
+      .then((r) => r.json())
+      .then((plan) => {
+        currentPlan = plan;
+        renderPlanGrid();
+        settingsMessage.textContent = 'Đã reset kế hoạch tuần.';
+        settingsMessage.style.color = 'var(--color-primary)';
+      })
+      .catch(() => {});
+  });
+
+  // ----- Chat log -----
+
+  function addUserMessage(text) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-enter flex justify-end';
+    wrap.innerHTML = `<div class="bubble-user px-4 py-2.5 text-sm max-w-[85%]">${escapeHtml(text)}</div>`;
+    chatLog.appendChild(wrap);
+    wrap.scrollIntoView({ block: 'end', behavior: reduceMotion() ? 'auto' : 'smooth' });
+    return wrap;
+  }
+
+  function reduceMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function addAgentTurn() {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-enter flex justify-start';
+    wrap.innerHTML = `
+      <div class="bubble-agent px-4 py-3 text-sm max-w-[90%] w-full sm:w-auto">
+        <div class="trace-steps space-y-2 mb-2"></div>
+        <div class="typing-indicator flex items-center gap-1 py-1">
+          <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+        </div>
+        <div class="final-answer text-sm" hidden></div>
+      </div>`;
+    chatLog.appendChild(wrap);
+    wrap.scrollIntoView({ block: 'end', behavior: reduceMotion() ? 'auto' : 'smooth' });
+    return {
+      stepsEl: wrap.querySelector('.trace-steps'),
+      typingEl: wrap.querySelector('.typing-indicator'),
+      finalEl: wrap.querySelector('.final-answer'),
+    };
+  }
+
+  function stepCard(entry) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-enter trace-rail py-0.5';
+
+    const statusOk = entry.observation && entry.observation.status === 'SUCCESS';
+    const dotColor = statusOk ? 'var(--color-primary)' : 'var(--color-danger)';
+    wrap.innerHTML = `
+      <div class="flex items-center gap-2 mb-1 flex-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--color-accent)" class="w-3.5 h-3.5 shrink-0" aria-hidden="true">
+          <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clip-rule="evenodd" />
+        </svg>
+        <span class="badge-tool text-xs rounded px-2 py-0.5">${escapeHtml(entry.tool_name || '')}</span>
+        <span class="text-xs" style="color: var(--color-muted-ink)">${((entry.latency_ms || 0) / 1000).toFixed(1)}s</span>
+      </div>
+      <div class="obs-pre text-xs rounded-lg p-2 mb-1.5 overflow-x-auto">${escapeHtml(JSON.stringify(entry.arguments))}</div>
+      <details>
+        <summary class="text-xs cursor-pointer flex items-center gap-1.5" style="color: var(--color-muted-ink)">
+          <span class="inline-block w-2 h-2 rounded-full" style="background: ${dotColor}"></span>
+          Observation (${statusOk ? 'SUCCESS' : (entry.observation && entry.observation.status) || '—'})
+        </summary>
+        <pre class="obs-pre text-xs rounded-lg p-2 mt-2 overflow-x-auto whitespace-pre-wrap">${escapeHtml(JSON.stringify(entry.observation, null, 2))}</pre>
+      </details>`;
+    return wrap;
+  }
+
+  function renderError(message) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-enter flex justify-start';
+    wrap.innerHTML = `<div class="bubble-agent px-4 py-2.5 text-sm" style="color: var(--color-danger)">Đã có lỗi xảy ra: ${escapeHtml(message)}</div>`;
+    chatLog.appendChild(wrap);
+  }
+
+  // ----- Streaming SSE consumption -----
+
+  function extractSSEEvents(buffer) {
+    const events = [];
+    let idx;
+    while ((idx = buffer.indexOf('\n\n')) !== -1) {
+      const rawEvent = buffer.slice(0, idx);
+      buffer = buffer.slice(idx + 2);
+      const dataLine = rawEvent.split('\n').find((l) => l.startsWith('data:'));
+      if (dataLine) {
+        try {
+          events.push(JSON.parse(dataLine.slice(5).trim()));
+        } catch (e) {
+          // ignore malformed frame
+        }
+      }
+    }
+    return { events, rest: buffer };
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const message = input.value.trim();
+    if (!message) return;
+
+    sendBtn.disabled = true;
+    input.value = '';
+    addUserMessage(message);
+    const turn = addAgentTurn();
+    let finalText = '';
+
+    function handleEvent(evt) {
+      const { channel, payload } = evt;
+
+      if (channel === 'step') {
+        turn.stepsEl.appendChild(stepCard(payload));
+      } else if (channel === 'final_start') {
+        turn.typingEl.hidden = true;
+        turn.finalEl.hidden = false;
+        finalText = '';
+      } else if (channel === 'final_token') {
+        finalText += payload.text;
+        turn.finalEl.innerHTML = formatText(finalText);
+      } else if (channel === 'final_end') {
+        // Final text already fully rendered via final_token events.
+      } else if (channel === 'done') {
+        turn.typingEl.hidden = true;
+        if (payload.used_mock_fallback) {
+          const badge = document.createElement('p');
+          badge.className = 'mock-badge text-xs mt-2';
+          badge.textContent = '⚠️ Phản hồi từ chế độ Mock — API thật gặp lỗi hoặc hết quota.';
+          turn.finalEl.after(badge);
+        }
+        loadPlan();
+      } else if (channel === 'error') {
+        turn.typingEl.hidden = true;
+        turn.finalEl.hidden = false;
+        turn.finalEl.style.color = 'var(--color-danger)';
+        turn.finalEl.textContent = payload.message || 'Đã có lỗi xảy ra.';
+      }
+    }
+
+    fetch('/api/chat/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        function pump() {
+          return reader.read().then(({ done, value }) => {
+            if (done) return;
+            buffer += decoder.decode(value, { stream: true });
+            const { events, rest } = extractSSEEvents(buffer);
+            buffer = rest;
+            events.forEach(handleEvent);
+            return pump();
+          });
+        }
+        return pump();
+      })
+      .catch((err) => {
+        turn.typingEl.hidden = true;
+        renderError(err.message);
+      })
+      .finally(() => {
+        sendBtn.disabled = false;
+      });
+  });
+
+  loadStatus();
+  showWelcomeMessage();
+  loadExamples();
+  loadPlan();
+})();
+</script>
+</body>
+</html>
