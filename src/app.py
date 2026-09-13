@@ -122,16 +122,27 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
                     if "data" in obs_data:
                         d = obs_data["data"]
                         final_answer = (
-                            f"Kết quả tra cứu cho sinh viên {obs_data.get('student_id', '')} ({d.get('full_name', '')}): "
-                            f"Lớp {d.get('class', '')}, GPA: {d.get('gpa', '')}, Email: {d.get('email', '')}, "
-                            f"Trạng thái: {d.get('status', '')}, Cố vấn: {d.get('advisor', '')}."
+                            f"Thông tin món '{obs_data.get('food_name', '')}': "
+                            f"{d.get('calories', '')} calories, Protein: {d.get('protein_g', '')}g, "
+                            f"Carbs: {d.get('carbs_g', '')}g, Fat: {d.get('fat_g', '')}g, "
+                            f"Giá: {d.get('price_vnd', '')}đ, Bữa phù hợp: {d.get('meal_type', '')}."
                         )
+                    elif "booking" in obs_data:
+                        b = obs_data["booking"]
+                        w = obs_data.get("week_summary", {})
+                        final_answer = (
+                            f"Đã thêm '{b.get('food_name', '')}' vào bữa {b.get('meal_slot', '')} ngày {b.get('day', '')}. "
+                            f"Đã dùng {w.get('total_spent_vnd', '')}đ trong tuần (còn lại {w.get('remaining_budget_vnd', '')}đ), "
+                            f"calories hôm đó: {w.get('total_calories_today', '')}/{w.get('daily_calorie_target', '')}."
+                        )
+                        if obs_data.get("variation_warning"):
+                            final_answer += f" ⚠️ {obs_data['variation_warning']}"
                     elif "message" in obs_data:
                         final_answer = obs_data["message"]
                     else:
                         final_answer = f"Đã hoàn tất xử lý qua MCP Server: {json.dumps(obs_data, ensure_ascii=False)}"
                 elif obs_data.get("status") == "NOT_FOUND":
-                    final_answer = obs_data.get("message", "Không tìm thấy thông tin sinh viên yêu cầu.")
+                    final_answer = obs_data.get("message", "Không tìm thấy thông tin yêu cầu.")
                 else:
                     final_answer = f"Phản hồi từ công cụ: {json.dumps(obs_data, ensure_ascii=False)}"
             
@@ -179,9 +190,9 @@ if __name__ == "__main__":
     if "--interactive" in sys.argv:
         print("🎮 [INTERACTIVE MODE] Trò chuyện trực tiếp với ReAct Agent:")
         print("💡 Gợi ý câu hỏi thử nghiệm:")
-        print("   - Câu hỏi chung: 'Quy chế học vụ VinUni yêu cầu bao nhiêu tín chỉ?'")
-        print("   - Tra cứu học vụ: 'Hãy tra cứu thông tin học vụ của sinh viên SV2026001'")
-        print("   - Đặt lịch hẹn: 'Đặt lịch hẹn tư vấn cho SV2026001 vào 14:00 ngày 15/09/2026'")
+        print("   - Câu hỏi chung: 'Một chế độ ăn cân bằng cần đảm bảo những nhóm chất nào?'")
+        print("   - Tra cứu món ăn: 'Hãy tra cứu thông tin dinh dưỡng và giá của món Phở bò tái'")
+        print("   - Thêm vào kế hoạch: 'Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi'")
         print("   - Gõ 'exit' hoặc 'quit' để kết thúc phiên trò chuyện.\n")
         while True:
             try:

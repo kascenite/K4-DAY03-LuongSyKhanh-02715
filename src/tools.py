@@ -1,6 +1,7 @@
 """
 🛠️ TOOL DEFINITIONS & EXECUTION BACKEND
 Mã nguồn chứa danh sách Tool Schemas (JSON Schema) và Execution Layer phục vụ cho MCP Server.
+Chủ đề: Trợ lý Lập kế hoạch Ăn uống Cá nhân (Personal Meal-Planning Assistant).
 """
 
 import json
@@ -11,41 +12,40 @@ from typing import Dict, Any
 # ==============================================================================
 
 TOOLS_SCHEMA = [
-    # Tool 1: Đã được định nghĩa mẫu sẵn cho Học viên tham khảo
     {
-        "name": "academic_query",
-        "description": "Tra cứu hồ sơ và thông tin học vụ của sinh viên VinUni bằng mã sinh viên.",
+        "name": "food_lookup",
+        "description": "Tra cứu thông tin dinh dưỡng (calories, protein, carbs, fat) và giá của một món ăn theo tên.",
         "parameters": {
             "type": "object",
             "properties": {
-                "student_id": {
+                "food_name": {
                     "type": "string",
-                    "description": "Mã sinh viên cần tra cứu (ví dụ: 'SV2026001')"
+                    "description": "Tên món ăn cần tra cứu (ví dụ: 'Phở bò tái')"
                 }
             },
-            "required": ["student_id"]
+            "required": ["food_name"]
         }
     },
-    
-    # --------------------------------------------------------------------------
-    # TODO 1.2: HỌC VIÊN HOÀN THIỆN TOOL SCHEMA CHO 'schedule_appointment'
-    # 🎯 YÊU CẦU THIẾT KẾ SCHEMA (JSON SCHEMA STANDARD):
-    # 1. Tool dùng để đặt lịch hẹn tư vấn học vụ với Cố vấn học tập VinUni.
-    # 2. Thiết kế các tham số (properties) để LLM trích xuất:
-    #    - student_id (string): Mã sinh viên cần đặt lịch (ví dụ: 'SV2026001')
-    #    - datetime_str (string): Thời gian hẹn (ví dụ: '14:00 15/09/2026')
-    #    - advisor_name (string): Tên cố vấn học tập
-    # 3. Khai báo danh sách các trường bắt buộc (required).
-    # --------------------------------------------------------------------------
     {
-        "name": "schedule_appointment",
-        "description": "Đặt lịch hẹn tư vấn học vụ với Cố vấn học tập VinUni.",
+        "name": "add_meal_to_plan",
+        "description": "Thêm một món ăn đã chọn vào kế hoạch ăn uống tuần tại một ngày và bữa cụ thể, đồng thời cập nhật tổng calories/chi phí đã dùng trong tuần.",
         "parameters": {
             "type": "object",
             "properties": {
-                # TODO 1.2: Khai báo các thuộc tính tham số cho Tool tại đây...
+                "day": {
+                    "type": "string",
+                    "description": "Ngày trong tuần cần lên kế hoạch (ví dụ: 'Thứ Hai', 'Thứ Ba', ..., 'Chủ Nhật')"
+                },
+                "meal_slot": {
+                    "type": "string",
+                    "description": "Bữa ăn trong ngày: 'Sáng', 'Trưa', hoặc 'Tối'"
+                },
+                "food_name": {
+                    "type": "string",
+                    "description": "Tên món ăn đã chọn để thêm vào kế hoạch (ví dụ: 'Cơm gà xối mỡ')"
+                }
             },
-            "required": [] # TODO 1.2: Khai báo danh sách các trường bắt buộc tại đây...
+            "required": ["day", "meal_slot", "food_name"]
         }
     }
 ]
@@ -55,57 +55,109 @@ TOOLS_SCHEMA = [
 # ==============================================================================
 
 MOCK_DATABASE = {
-    "SV2026001": {
-        "full_name": "Nguyễn Văn An",
-        "class": "AI-K4",
-        "gpa": 3.85,
-        "email": "an.nv@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "PGS.TS Nguyễn Văn A"
-    },
-    "SV2026002": {
-        "full_name": "Trần Thị Bình",
-        "class": "AI-K4",
-        "gpa": 3.60,
-        "email": "binh.tt@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "TS. Lê Thị B"
-    }
+    "Phở bò tái": {"calories": 480, "protein_g": 25, "carbs_g": 55, "fat_g": 12, "price_vnd": 45000, "meal_type": "Sáng/Trưa"},
+    "Cơm gà xối mỡ": {"calories": 650, "protein_g": 30, "carbs_g": 70, "fat_g": 25, "price_vnd": 35000, "meal_type": "Trưa/Tối"},
+    "Bún chả": {"calories": 550, "protein_g": 22, "carbs_g": 60, "fat_g": 20, "price_vnd": 40000, "meal_type": "Trưa"},
+    "Salad ức gà": {"calories": 380, "protein_g": 32, "carbs_g": 18, "fat_g": 16, "price_vnd": 50000, "meal_type": "Trưa/Tối"},
+    "Bánh mì trứng": {"calories": 400, "protein_g": 15, "carbs_g": 45, "fat_g": 18, "price_vnd": 20000, "meal_type": "Sáng"},
+    "Cơm tấm sườn": {"calories": 700, "protein_g": 28, "carbs_g": 75, "fat_g": 28, "price_vnd": 38000, "meal_type": "Trưa/Tối"},
+    "Xôi mặn": {"calories": 450, "protein_g": 12, "carbs_g": 65, "fat_g": 14, "price_vnd": 18000, "meal_type": "Sáng"},
+    "Canh chua cá kèm cơm": {"calories": 500, "protein_g": 24, "carbs_g": 55, "fat_g": 15, "price_vnd": 42000, "meal_type": "Tối"},
+}
+
+# Trạng thái kế hoạch ăn uống tuần (mock, lưu trong bộ nhớ trong suốt vòng đời tiến trình)
+WEEKDAYS = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"]
+
+WEEKLY_PLAN_STATE = {
+    "entries": [],  # danh sách {"day", "meal_slot", "food_name", "calories", "price_vnd"}
+    "week_budget_vnd": 700000,
+    "daily_calorie_target": 2000,
 }
 
 
-def execute_academic_query(student_id: str) -> str:
-    """Thực thi tra cứu học vụ theo mã sinh viên"""
-    student = MOCK_DATABASE.get(student_id.strip().upper())
-    if student:
+def execute_food_lookup(food_name: str) -> str:
+    """Thực thi tra cứu thông tin dinh dưỡng/giá theo tên món ăn"""
+    lookup = {name.strip().lower(): (name, data) for name, data in MOCK_DATABASE.items()}
+    match = lookup.get(food_name.strip().lower())
+    if match:
+        real_name, data = match
         return json.dumps({
             "status": "SUCCESS",
-            "student_id": student_id,
-            "data": student
+            "food_name": real_name,
+            "data": data
         }, ensure_ascii=False)
     else:
         return json.dumps({
             "status": "NOT_FOUND",
-            "message": f"Không tìm thấy dữ liệu sinh viên có mã '{student_id}'"
+            "message": f"Không tìm thấy dữ liệu dinh dưỡng cho món '{food_name}'"
         }, ensure_ascii=False)
 
 
-def execute_schedule_appointment(student_id: str, datetime_str: str, advisor_name: str = "PGS.TS Nguyễn Văn A") -> str:
-    """Thực thi đặt lịch hẹn tư vấn học vụ"""
-    return json.dumps({
+def execute_add_meal_to_plan(day: str, meal_slot: str, food_name: str) -> str:
+    """Thực thi thêm món ăn vào kế hoạch tuần, kiểm tra đa dạng món trong 3 ngày liên tiếp và cập nhật tổng ngân sách/calories"""
+    lookup = {name.strip().lower(): (name, data) for name, data in MOCK_DATABASE.items()}
+    match = lookup.get(food_name.strip().lower())
+    if not match:
+        return json.dumps({
+            "status": "NOT_FOUND",
+            "message": f"Không thể thêm vào kế hoạch vì không tìm thấy món '{food_name}' trong dữ liệu."
+        }, ensure_ascii=False)
+
+    real_name, data = match
+
+    try:
+        day_idx = WEEKDAYS.index(day.strip())
+    except ValueError:
+        return json.dumps({
+            "status": "INVALID_DAY",
+            "message": f"Ngày '{day}' không hợp lệ. Vui lòng dùng một trong: {', '.join(WEEKDAYS)}"
+        }, ensure_ascii=False)
+
+    # Kiểm tra đa dạng món ăn: không lặp lại cùng món trong 3 ngày liên tiếp
+    variation_warning = None
+    for entry in WEEKLY_PLAN_STATE["entries"]:
+        if entry["food_name"] == real_name:
+            try:
+                other_idx = WEEKDAYS.index(entry["day"])
+            except ValueError:
+                continue
+            if abs(other_idx - day_idx) <= 2:
+                variation_warning = f"Món '{real_name}' đã được lên kế hoạch vào {entry['day']} (gần {day}), nên đa dạng hóa thực đơn."
+                break
+
+    entry = {
+        "day": day,
+        "meal_slot": meal_slot,
+        "food_name": real_name,
+        "calories": data["calories"],
+        "price_vnd": data["price_vnd"],
+    }
+    WEEKLY_PLAN_STATE["entries"].append(entry)
+
+    total_spent_vnd = sum(e["price_vnd"] for e in WEEKLY_PLAN_STATE["entries"])
+    total_calories_today = sum(e["calories"] for e in WEEKLY_PLAN_STATE["entries"] if e["day"] == day)
+
+    result = {
         "status": "SUCCESS",
-        "booking_id": f"BK-{student_id}-99",
-        "student_id": student_id,
-        "datetime": datetime_str,
-        "advisor": advisor_name,
-        "message": f"Đặt lịch thành công cho sinh viên {student_id} với {advisor_name} vào lúc {datetime_str}."
-    }, ensure_ascii=False)
+        "booking": entry,
+        "week_summary": {
+            "total_spent_vnd": total_spent_vnd,
+            "remaining_budget_vnd": WEEKLY_PLAN_STATE["week_budget_vnd"] - total_spent_vnd,
+            "total_calories_today": total_calories_today,
+            "daily_calorie_target": WEEKLY_PLAN_STATE["daily_calorie_target"],
+        },
+        "message": f"Đã thêm '{real_name}' vào bữa {meal_slot} ngày {day}."
+    }
+    if variation_warning:
+        result["variation_warning"] = variation_warning
+
+    return json.dumps(result, ensure_ascii=False)
 
 
 # Router gọi tool thực tế
 TOOL_ROUTER = {
-    "academic_query": execute_academic_query,
-    "schedule_appointment": execute_schedule_appointment
+    "food_lookup": execute_food_lookup,
+    "add_meal_to_plan": execute_add_meal_to_plan
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:

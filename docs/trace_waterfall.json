@@ -1,29 +1,40 @@
 [
   {
     "step": 1,
-    "query": "Chào bạn, bạn có thể giới thiệu quy chế học vụ cơ bản của Đại học VinUni không?",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool.",
-    "output": "[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-    "latency_ms": 2845.93
-  },
-  {
-    "step": 1,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "academic_query",
+    "tool_name": "add_meal_to_plan",
     "arguments": {
-      "student_id": "SV2026001"
+      "meal_slot": "Trưa",
+      "day": "Thứ Ba",
+      "food_name": "Salad ức gà"
     },
-    "observation": {},
-    "latency_ms": 799.12
+    "observation": {
+      "status": "SUCCESS",
+      "booking": {
+        "day": "Thứ Ba",
+        "meal_slot": "Trưa",
+        "food_name": "Salad ức gà",
+        "calories": 380,
+        "price_vnd": 50000
+      },
+      "week_summary": {
+        "total_spent_vnd": 100000,
+        "remaining_budget_vnd": 600000,
+        "total_calories_today": 760,
+        "daily_calorie_target": 2000
+      },
+      "message": "Đã thêm 'Salad ức gà' vào bữa Trưa ngày Thứ Ba.",
+      "variation_warning": "Món 'Salad ức gà' đã được lên kế hoạch vào Thứ Ba (gần Thứ Ba), nên đa dạng hóa thực đơn."
+    },
+    "latency_ms": 6046.17
   },
   {
     "step": 2,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
     "action_type": "FINAL_ANSWER",
     "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Chưa thể trả lời chi tiết do chưa nhận được dữ liệu từ MCP Server (hãy hoàn thành TODO 2.1).",
+    "output": "Đã thêm 'Salad ức gà' vào bữa Trưa ngày Thứ Ba. Đã dùng 100000đ trong tuần (còn lại 600000đ), calories hôm đó: 760/2000. ⚠️ Món 'Salad ức gà' đã được lên kế hoạch vào Thứ Ba (gần Thứ Ba), nên đa dạng hóa thực đơn.",
     "latency_ms": 10.0
   }
 ]

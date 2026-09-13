@@ -36,27 +36,32 @@ class MockOfflineProvider(BaseLLMProvider):
 
     def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
         prompt_lower = prompt.lower()
-        
-        # Mô phỏng nhận diện intent gọi Tool
-        if "sv2026001" in prompt_lower and "đặt lịch" in prompt_lower:
+
+        # Mô phỏng nhận diện intent gọi Tool: tìm tên món ăn được nhắc tới trong câu hỏi
+        known_foods = ["phở bò tái", "cơm gà xối mỡ", "bún chả", "salad ức gà",
+                       "bánh mì trứng", "cơm tấm sườn", "xôi mặn", "canh chua cá kèm cơm"]
+        mentioned_food = next((f for f in known_foods if f in prompt_lower), None)
+        action_verbs = ["thêm", "đặt", "lên kế hoạch", "book"]
+
+        if mentioned_food and any(v in prompt_lower for v in action_verbs):
             return {
                 "type": "tool_call",
-                "tool_name": "schedule_appointment",
-                "arguments": {"student_id": "SV2026001", "datetime_str": "14:00 15/09/2026", "advisor_name": "PGS.TS Nguyễn Văn A"},
-                "thought": "Người dùng yêu cầu đặt lịch hẹn tư vấn cho sinh viên SV2026001. Tôi sẽ gọi tool schedule_appointment."
+                "tool_name": "add_meal_to_plan",
+                "arguments": {"day": "Thứ Hai", "meal_slot": "Trưa", "food_name": mentioned_food.title()},
+                "thought": f"Người dùng muốn thêm món '{mentioned_food}' vào kế hoạch ăn uống. Tôi sẽ gọi tool add_meal_to_plan."
             }
-        elif "sv2026001" in prompt_lower or "tra cứu" in prompt_lower:
+        elif mentioned_food or "tra cứu" in prompt_lower:
             return {
                 "type": "tool_call",
-                "tool_name": "academic_query",
-                "arguments": {"student_id": "SV2026001"},
-                "thought": "Người dùng muốn tra cứu thông tin học vụ của sinh viên SV2026001. Tôi sẽ gọi tool academic_query."
+                "tool_name": "food_lookup",
+                "arguments": {"food_name": (mentioned_food or "Phở bò tái").title()},
+                "thought": f"Người dùng muốn tra cứu thông tin dinh dưỡng/giá của món ăn. Tôi sẽ gọi tool food_lookup."
             }
         else:
             return {
                 "type": "text",
-                "content": f"[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-                "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool."
+                "content": "[Mock Agent Response]: Xin chào! Một chế độ ăn cân bằng nên có đủ 4 nhóm chất: tinh bột, đạm, chất béo, vitamin/chất xơ, kết hợp với việc theo dõi ngân sách và lượng calories nạp vào mỗi ngày.",
+                "thought": "Câu hỏi chung về dinh dưỡng, trả lời trực tiếp không cần gọi Tool."
             }
 
 

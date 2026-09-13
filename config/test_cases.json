@@ -1,0 +1,37 @@
+[
+  {
+    "id": "TC01",
+    "type": "direct_query",
+    "question": "Chào bạn, một chế độ ăn cân bằng dinh dưỡng cần đảm bảo những nhóm chất nào?",
+    "expected_behavior": "Agent trả lời trực tiếp từ kiến thức chung về dinh dưỡng, không cần gọi bất kỳ Tool nào.",
+    "complexity": "Low"
+  },
+  {
+    "id": "TC02",
+    "type": "single_tool_query",
+    "question": "Hãy tra cứu thông tin dinh dưỡng và giá của món Phở bò tái.",
+    "expected_behavior": "Agent nhận diện nhu cầu tra cứu, tự động phát sinh Tool Call 'food_lookup' với food_name 'Phở bò tái'.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC03",
+    "type": "appointment_booking",
+    "question": "Hãy thêm món Salad ức gà vào bữa trưa Thứ Ba cho tôi.",
+    "expected_behavior": "Agent tự động phát sinh Tool Call 'add_meal_to_plan' với day='Thứ Ba', meal_slot='Trưa', food_name='Salad ức gà'.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC04",
+    "type": "multi_step_reasoning",
+    "question": "Tôi muốn ăn tối nay trong ngân sách còn lại của tuần, hãy tra cứu món Cơm tấm sườn rồi thêm vào kế hoạch bữa tối Thứ Tư giúp tôi.",
+    "expected_behavior": "Agent lý tưởng nên tra cứu 'food_lookup' trước rồi mới gọi 'add_meal_to_plan'. Lưu ý: run_react_agent() hiện chỉ thực thi 1 tool call mỗi lượt hỏi (không lặp lại LLM sau Observation trong cùng 1 request), nên bài test này minh họa một bước suy luận có cân nhắc ngân sách/calories, chưa phải chuỗi 2 tool call thực sự.",
+    "complexity": "High"
+  },
+  {
+    "id": "TC05",
+    "type": "edge_case_handling",
+    "question": "Tra cứu thông tin dinh dưỡng của món 'Sushi cá ngừ đại dương' giúp tôi.",
+    "expected_behavior": "Agent nhận kết quả NOT_FOUND từ Tool 'food_lookup' (món không có trong danh mục) và đưa ra phản hồi lịch sự, chính xác, không bịa đặt dữ liệu.",
+    "complexity": "Medium"
+  }
+]
