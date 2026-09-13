@@ -48,9 +48,13 @@ class MockOfflineProvider(BaseLLMProvider):
                 "thought": "Đã có Observation từ Tool trước đó; trả lời trực tiếp mà không gọi thêm Tool (giới hạn của chế độ Mock)."
             }
 
-        # Mô phỏng nhận diện intent gọi Tool: tìm tên món ăn được nhắc tới trong câu hỏi
+        # Mô phỏng nhận diện intent gọi Tool: chỉ gọi Tool khi câu hỏi thực sự yêu cầu tra cứu/thêm
+        # vào kế hoạch — tên món ăn xuất hiện trong câu (vd: chia sẻ sở thích) mà không có yêu cầu
+        # cụ thể thì không kích hoạt gọi Tool.
         mentioned_food = next((name for name in MOCK_DATABASE.keys() if name.lower() in prompt_lower), None)
         action_verbs = ["thêm", "đặt", "lên kế hoạch", "book"]
+        lookup_verbs = ["tra cứu", "thông tin", "giá", "calories", "dinh dưỡng", "bao nhiêu", "là gì", "gợi ý", "đề xuất", "nên ăn"]
+        has_lookup_intent = any(v in prompt_lower for v in lookup_verbs)
 
         if mentioned_food and any(v in prompt_lower for v in action_verbs):
             return {
@@ -59,7 +63,7 @@ class MockOfflineProvider(BaseLLMProvider):
                 "arguments": {"day": "Thứ Hai", "meal_slot": "Trưa", "food_name": mentioned_food},
                 "thought": f"Người dùng muốn thêm món '{mentioned_food}' vào kế hoạch ăn uống. Tôi sẽ gọi tool add_meal_to_plan."
             }
-        elif mentioned_food or "tra cứu" in prompt_lower:
+        elif has_lookup_intent:
             return {
                 "type": "tool_call",
                 "tool_name": "food_lookup",

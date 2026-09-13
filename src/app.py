@@ -61,12 +61,16 @@ def run_baseline_chatbot(user_query: str, provider):
     print(f"🤖 Chatbot phản hồi:\n{response}")
 
 
-def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) -> list:
+def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer, on_step=None) -> list:
     """
     [REACT AGENT LOOP] Thực thi vòng lặp Thought -> Action -> Observation với MCP Server.
     Observation được nạp lại vào ngữ cảnh và đưa lại cho LLM để LLM tự quyết định bước tiếp theo
     (gọi thêm Tool khác hoặc tổng hợp Final Answer bằng chính LLM), cho phép suy luận đa bước thật sự.
     Trả về danh sách trace log của phiên thực thi.
+
+    on_step (tùy chọn): callback được gọi ngay sau khi mỗi trace entry được thêm vào,
+    dùng cho các bên tiêu thụ theo thời gian thực (vd: streaming qua web UI). Mặc định
+    None nên hành vi CLI (--all/--interactive) không đổi.
     """
     print(f"\n🤖 [REACT AGENT] Câu hỏi: {user_query}")
 
@@ -91,14 +95,17 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
         if llm_response.get("type") == "text":
             final_content = llm_response.get("content", "")
             print(f"🏁 [Final Answer]: {final_content}")
-            trace_logs.append({
+            entry = {
                 "step": step,
                 "query": user_query,
                 "action_type": "FINAL_ANSWER",
                 "thought": thought,
                 "output": final_content,
                 "latency_ms": latency_ms
-            })
+            }
+            trace_logs.append(entry)
+            if on_step:
+                on_step(entry)
             return trace_logs
 
         # Trường hợp 2: LLM đề xuất gọi Tool (Action)
@@ -114,7 +121,7 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
             obs_str = json.dumps(obs_data, ensure_ascii=False)
             print(f"👁️ [Observation từ MCP Server]: {obs_str}")
 
-            trace_logs.append({
+            entry = {
                 "step": step,
                 "query": user_query,
                 "action_type": "TOOL_EXECUTION",
@@ -122,7 +129,10 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
                 "arguments": arguments,
                 "observation": obs_data,
                 "latency_ms": latency_ms
-            })
+            }
+            trace_logs.append(entry)
+            if on_step:
+                on_step(entry)
 
             # Nạp lại Observation vào ngữ cảnh để LLM tự quyết định bước tiếp theo trong lượt gọi kế tiếp
             conversation_context += (
@@ -137,14 +147,17 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
 
     # Hết số bước cho phép mà LLM chưa đưa ra Final Answer bằng văn bản
     print(f"⚠️ [CHÚ Ý]: Đã đạt giới hạn {MAX_ITERATIONS} bước suy luận mà chưa có Final Answer rõ ràng.")
-    trace_logs.append({
+    entry = {
         "step": step + 1,
         "query": user_query,
         "action_type": "FINAL_ANSWER",
         "thought": "Đã đạt giới hạn số bước ReAct Loop cho phép.",
         "output": "Xin lỗi, tôi cần thêm bước xử lý để hoàn tất yêu cầu này nhưng đã đạt giới hạn số bước suy luận hiện tại.",
         "latency_ms": 0.0
-    })
+    }
+    trace_logs.append(entry)
+    if on_step:
+        on_step(entry)
     return trace_logs
 
 
