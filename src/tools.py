@@ -63,6 +63,13 @@ MOCK_DATABASE = {
     "Cơm tấm sườn": {"calories": 700, "protein_g": 28, "carbs_g": 75, "fat_g": 28, "price_vnd": 38000, "meal_type": "Trưa/Tối"},
     "Xôi mặn": {"calories": 450, "protein_g": 12, "carbs_g": 65, "fat_g": 14, "price_vnd": 18000, "meal_type": "Sáng"},
     "Canh chua cá kèm cơm": {"calories": 500, "protein_g": 24, "carbs_g": 55, "fat_g": 15, "price_vnd": 42000, "meal_type": "Tối"},
+    "Cháo gà": {"calories": 350, "protein_g": 18, "carbs_g": 45, "fat_g": 10, "price_vnd": 25000, "meal_type": "Sáng"},
+    "Bún bò Huế": {"calories": 600, "protein_g": 26, "carbs_g": 65, "fat_g": 22, "price_vnd": 45000, "meal_type": "Sáng/Trưa"},
+    "Mì Quảng": {"calories": 580, "protein_g": 24, "carbs_g": 68, "fat_g": 20, "price_vnd": 40000, "meal_type": "Trưa/Tối"},
+    "Gỏi cuốn tôm thịt": {"calories": 300, "protein_g": 18, "carbs_g": 35, "fat_g": 8, "price_vnd": 35000, "meal_type": "Trưa/Tối"},
+    "Cơm chay đậu hũ": {"calories": 420, "protein_g": 16, "carbs_g": 60, "fat_g": 12, "price_vnd": 30000, "meal_type": "Trưa/Tối"},
+    "Bánh cuốn": {"calories": 380, "protein_g": 14, "carbs_g": 55, "fat_g": 10, "price_vnd": 25000, "meal_type": "Sáng"},
+    "Hủ tiếu Nam Vang": {"calories": 520, "protein_g": 22, "carbs_g": 60, "fat_g": 16, "price_vnd": 38000, "meal_type": "Sáng/Trưa"},
 }
 
 # Trạng thái kế hoạch ăn uống tuần (mock, lưu trong bộ nhớ trong suốt vòng đời tiến trình)

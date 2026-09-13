@@ -9,6 +9,8 @@ import json
 from typing import Dict, Any, List
 from dotenv import load_dotenv
 
+from tools import MOCK_DATABASE
+
 if sys.stdout.encoding != 'utf-8':
     try:
         sys.stdout.reconfigure(encoding='utf-8')
@@ -37,24 +39,31 @@ class MockOfflineProvider(BaseLLMProvider):
     def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
         prompt_lower = prompt.lower()
 
+        # Nếu ngữ cảnh đã có Observation từ một lượt gọi Tool trước đó, chế độ Mock không suy luận tiếp
+        # (tránh việc từ khóa trong đoạn nhắc lại Observation kích hoạt gọi Tool lặp vô hạn tới MAX_ITERATIONS)
+        if "[observation]" in prompt_lower:
+            return {
+                "type": "text",
+                "content": "[Mock Agent Response]: Đã nhận dữ liệu từ Tool ở bước trước. (Chế độ Mock Offline không tổng hợp suy luận đa bước chi tiết như LLM thật, vui lòng cấu hình API Key thật để kiểm thử đầy đủ.)",
+                "thought": "Đã có Observation từ Tool trước đó; trả lời trực tiếp mà không gọi thêm Tool (giới hạn của chế độ Mock)."
+            }
+
         # Mô phỏng nhận diện intent gọi Tool: tìm tên món ăn được nhắc tới trong câu hỏi
-        known_foods = ["phở bò tái", "cơm gà xối mỡ", "bún chả", "salad ức gà",
-                       "bánh mì trứng", "cơm tấm sườn", "xôi mặn", "canh chua cá kèm cơm"]
-        mentioned_food = next((f for f in known_foods if f in prompt_lower), None)
+        mentioned_food = next((name for name in MOCK_DATABASE.keys() if name.lower() in prompt_lower), None)
         action_verbs = ["thêm", "đặt", "lên kế hoạch", "book"]
 
         if mentioned_food and any(v in prompt_lower for v in action_verbs):
             return {
                 "type": "tool_call",
                 "tool_name": "add_meal_to_plan",
-                "arguments": {"day": "Thứ Hai", "meal_slot": "Trưa", "food_name": mentioned_food.title()},
+                "arguments": {"day": "Thứ Hai", "meal_slot": "Trưa", "food_name": mentioned_food},
                 "thought": f"Người dùng muốn thêm món '{mentioned_food}' vào kế hoạch ăn uống. Tôi sẽ gọi tool add_meal_to_plan."
             }
         elif mentioned_food or "tra cứu" in prompt_lower:
             return {
                 "type": "tool_call",
                 "tool_name": "food_lookup",
-                "arguments": {"food_name": (mentioned_food or "Phở bò tái").title()},
+                "arguments": {"food_name": mentioned_food or next(iter(MOCK_DATABASE))},
                 "thought": f"Người dùng muốn tra cứu thông tin dinh dưỡng/giá của món ăn. Tôi sẽ gọi tool food_lookup."
             }
         else:

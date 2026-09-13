@@ -24,7 +24,7 @@
     "id": "TC04",
     "type": "multi_step_reasoning",
     "question": "Tôi muốn ăn tối nay trong ngân sách còn lại của tuần, hãy tra cứu món Cơm tấm sườn rồi thêm vào kế hoạch bữa tối Thứ Tư giúp tôi.",
-    "expected_behavior": "Agent lý tưởng nên tra cứu 'food_lookup' trước rồi mới gọi 'add_meal_to_plan'. Lưu ý: run_react_agent() hiện chỉ thực thi 1 tool call mỗi lượt hỏi (không lặp lại LLM sau Observation trong cùng 1 request), nên bài test này minh họa một bước suy luận có cân nhắc ngân sách/calories, chưa phải chuỗi 2 tool call thực sự.",
+    "expected_behavior": "Agent thực hiện chuỗi suy luận ReAct 2 bước thực sự: gọi 'food_lookup' trước để lấy calories/giá, nhận Observation, sau đó tự quyết định gọi tiếp 'add_meal_to_plan' để thêm món vào kế hoạch bữa tối Thứ Tư, rồi tổng hợp Final Answer có cân nhắc ngân sách/calories còn lại.",
     "complexity": "High"
   },
   {

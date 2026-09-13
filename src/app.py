@@ -63,28 +63,31 @@ def run_baseline_chatbot(user_query: str, provider):
 
 def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) -> list:
     """
-    [REACT AGENT LOOP] Thực thi vòng lặp Thought -> Action -> Observation với MCP Server
+    [REACT AGENT LOOP] Thực thi vòng lặp Thought -> Action -> Observation với MCP Server.
+    Observation được nạp lại vào ngữ cảnh và đưa lại cho LLM để LLM tự quyết định bước tiếp theo
+    (gọi thêm Tool khác hoặc tổng hợp Final Answer bằng chính LLM), cho phép suy luận đa bước thật sự.
     Trả về danh sách trace log của phiên thực thi.
     """
     print(f"\n🤖 [REACT AGENT] Câu hỏi: {user_query}")
-    
+
     step = 0
     trace_logs = []
     tools_list = mcp_server.list_tools()
-    
+    conversation_context = user_query
+
     while step < MAX_ITERATIONS:
         step += 1
         step_start_time = time.time()
         print(f"\n--- 🔄 Vòng lặp ReAct Loop (Step {step}/{MAX_ITERATIONS}) ---")
-        
-        # Gọi LLM với Native Tool Calling Specs
-        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT)
+
+        # Gọi LLM với Native Tool Calling Specs, ngữ cảnh bao gồm cả Observation của các bước trước (nếu có)
+        llm_response = provider.generate_with_tools(conversation_context, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT)
         latency_ms = round((time.time() - step_start_time) * 1000, 2)
-        
+
         thought = llm_response.get("thought", "Đang suy luận...")
         print(f"🧠 [Thought]: {thought}")
-        
-        # Trường hợp 1: LLM quyết định trả lời bằng văn bản trực tiếp
+
+        # Trường hợp 1: LLM quyết định trả lời bằng văn bản trực tiếp (đã đủ dữ liệu để tổng hợp)
         if llm_response.get("type") == "text":
             final_content = llm_response.get("content", "")
             print(f"🏁 [Final Answer]: {final_content}")
@@ -96,56 +99,21 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
                 "output": final_content,
                 "latency_ms": latency_ms
             })
-            break
-            
+            return trace_logs
+
         # Trường hợp 2: LLM đề xuất gọi Tool (Action)
         elif llm_response.get("type") == "tool_call":
             tool_name = llm_response.get("tool_name")
             arguments = llm_response.get("arguments", {})
-            
+
             print(f"🛠️ [Action Proposed]: {tool_name}({arguments})")
-            
+
             # Thực thi Tool qua MCP Server
             mcp_result = mcp_server.call_tool(tool_name, arguments)
             obs_data = mcp_result.get("result", {})
-            
-            if not obs_data:
-                print(f"👁️ [Observation từ MCP Server]: {{}}")
-                print(f"⚠️ [CHÚ Ý]: MCP Server trả về kết quả rỗng! Học viên cần hoàn thành TODO 2.1 trong 'src/mcp_server.py'.")
-                final_answer = "Chưa thể trả lời chi tiết do chưa nhận được dữ liệu từ MCP Server (hãy hoàn thành TODO 2.1)."
-            else:
-                obs_str = json.dumps(obs_data, ensure_ascii=False)
-                print(f"👁️ [Observation từ MCP Server]: {obs_str}")
-                
-                # Tổng hợp Final Answer từ kết quả Observation thực tế
-                if obs_data.get("status") == "SUCCESS":
-                    if "data" in obs_data:
-                        d = obs_data["data"]
-                        final_answer = (
-                            f"Thông tin món '{obs_data.get('food_name', '')}': "
-                            f"{d.get('calories', '')} calories, Protein: {d.get('protein_g', '')}g, "
-                            f"Carbs: {d.get('carbs_g', '')}g, Fat: {d.get('fat_g', '')}g, "
-                            f"Giá: {d.get('price_vnd', '')}đ, Bữa phù hợp: {d.get('meal_type', '')}."
-                        )
-                    elif "booking" in obs_data:
-                        b = obs_data["booking"]
-                        w = obs_data.get("week_summary", {})
-                        final_answer = (
-                            f"Đã thêm '{b.get('food_name', '')}' vào bữa {b.get('meal_slot', '')} ngày {b.get('day', '')}. "
-                            f"Đã dùng {w.get('total_spent_vnd', '')}đ trong tuần (còn lại {w.get('remaining_budget_vnd', '')}đ), "
-                            f"calories hôm đó: {w.get('total_calories_today', '')}/{w.get('daily_calorie_target', '')}."
-                        )
-                        if obs_data.get("variation_warning"):
-                            final_answer += f" ⚠️ {obs_data['variation_warning']}"
-                    elif "message" in obs_data:
-                        final_answer = obs_data["message"]
-                    else:
-                        final_answer = f"Đã hoàn tất xử lý qua MCP Server: {json.dumps(obs_data, ensure_ascii=False)}"
-                elif obs_data.get("status") == "NOT_FOUND":
-                    final_answer = obs_data.get("message", "Không tìm thấy thông tin yêu cầu.")
-                else:
-                    final_answer = f"Phản hồi từ công cụ: {json.dumps(obs_data, ensure_ascii=False)}"
-            
+            obs_str = json.dumps(obs_data, ensure_ascii=False)
+            print(f"👁️ [Observation từ MCP Server]: {obs_str}")
+
             trace_logs.append({
                 "step": step,
                 "query": user_query,
@@ -155,21 +123,28 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPAcademicServer) ->
                 "observation": obs_data,
                 "latency_ms": latency_ms
             })
-            
-            # Kết thúc vòng lặp sau khi hoàn tất Observation và xuất Final Answer
-            print(f"🧠 [Thought]: Đã nhận được dữ liệu từ MCP Server. Tổng hợp kết quả phản hồi.")
-            print(f"🏁 [Final Answer]: {final_answer}")
-            
-            trace_logs.append({
-                "step": step + 1,
-                "query": user_query,
-                "action_type": "FINAL_ANSWER",
-                "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-                "output": final_answer,
-                "latency_ms": 10.0
-            })
-            break
 
+            # Nạp lại Observation vào ngữ cảnh để LLM tự quyết định bước tiếp theo trong lượt gọi kế tiếp
+            conversation_context += (
+                f"\n\n[Đã gọi Tool]: {tool_name}({json.dumps(arguments, ensure_ascii=False)})"
+                f"\n[Observation]: {obs_str}"
+                f"\nDựa trên Observation này: nếu đã đủ dữ liệu để trả lời đầy đủ yêu cầu ban đầu, "
+                f"hãy trả lời trực tiếp bằng văn bản (không gọi thêm Tool). Nếu yêu cầu ban đầu còn cần "
+                f"thêm một Tool khác (ví dụ: đã tra cứu món ăn xong thì tiến hành thêm vào kế hoạch), "
+                f"hãy tiếp tục gọi đúng Tool đó với tham số phù hợp."
+            )
+            # Vòng lặp tiếp tục sang step kế tiếp để LLM tự tổng hợp hoặc gọi thêm Tool
+
+    # Hết số bước cho phép mà LLM chưa đưa ra Final Answer bằng văn bản
+    print(f"⚠️ [CHÚ Ý]: Đã đạt giới hạn {MAX_ITERATIONS} bước suy luận mà chưa có Final Answer rõ ràng.")
+    trace_logs.append({
+        "step": step + 1,
+        "query": user_query,
+        "action_type": "FINAL_ANSWER",
+        "thought": "Đã đạt giới hạn số bước ReAct Loop cho phép.",
+        "output": "Xin lỗi, tôi cần thêm bước xử lý để hoàn tất yêu cầu này nhưng đã đạt giới hạn số bước suy luận hiện tại.",
+        "latency_ms": 0.0
+    })
     return trace_logs
 
 
